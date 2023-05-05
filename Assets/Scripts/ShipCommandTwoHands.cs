@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.XR.Interaction.Toolkit;
 
-public class ShipCommandDevice : MonoBehaviour
+public class ShipCommandTwoHands : MonoBehaviour
 {
     [SerializeField] private XRBaseController _translationController;
     [SerializeField] private XRBaseController _rotationController;

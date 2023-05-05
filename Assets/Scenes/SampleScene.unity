@@ -3203,6 +3203,7 @@ GameObject:
   - component: {fileID: 2089313813}
   - component: {fileID: 2089313812}
   - component: {fileID: 2089313817}
+  - component: {fileID: 2089313818}
   m_Layer: 0
   m_Name: RightHand Controller
   m_TagString: Untagged
@@ -3782,7 +3783,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 2089313810}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 006a8c50596441845845e0c4ba06a32f, type: 3}
   m_Name: 
@@ -3800,6 +3801,30 @@ MonoBehaviour:
   _rotationsSensibility: 0.0025
   _debugText1: {fileID: 1133458309}
   _debugText2: {fileID: 645571271}
+--- !u!114 &2089313818
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2089313810}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 526ace72d321e6a4689228a8f115193b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  _controller: {fileID: 2089313816}
+  _hand: {fileID: 0}
+  _zeroPointMarker: {fileID: 1279726438}
+  _shipMarker: {fileID: 1520072395}
+  _shipRigidbody: {fileID: 929682456}
+  _translationsSensibility: 5
+  _rotationsSensibility: 0.0025
+  _debugText1: {fileID: 0}
+  _debugText2: {fileID: 0}
+  _rotationXFactor: 1
+  _rotationYFactor: 1
+  _rotationZFactor: 1
 --- !u!1001 &7209673324851109933
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -3814,18 +3839,33 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
         type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
+        type: 3}
       propertyPath: m_LocalPosition.x
-      value: 0.32
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
         type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0.278
+      value: 0.447
       objectReference: {fileID: 0}
     - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
         type: 3}
       propertyPath: m_LocalPosition.z
-      value: 0
+      value: 0.738
       objectReference: {fileID: 0}
     - target: {fileID: 7209673323974439754, guid: f15121131ccd3e344a65f9a6a1d17773,
         type: 3}
@@ -3870,8 +3910,23 @@ PrefabInstance:
     - target: {fileID: 7209673323974439755, guid: f15121131ccd3e344a65f9a6a1d17773,
         type: 3}
       propertyPath: m_IsActive
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 7209673324173454308, guid: f15121131ccd3e344a65f9a6a1d17773,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3fd346542d3abae4eb6e47e6b26d7de6, type: 2}
+    - target: {fileID: 7209673324525557932, guid: f15121131ccd3e344a65f9a6a1d17773,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3fd346542d3abae4eb6e47e6b26d7de6, type: 2}
+    - target: {fileID: 7209673324925925677, guid: f15121131ccd3e344a65f9a6a1d17773,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 3fd346542d3abae4eb6e47e6b26d7de6, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f15121131ccd3e344a65f9a6a1d17773, type: 3}
 --- !u!1001 &8704701588139476163
@@ -3881,6 +3936,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 929682457}
     m_Modifications:
+    - target: {fileID: 8704701588748756907, guid: ed1208aa606c7f849ae0b44e0e450a16,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83265d2747b5c3949ba18ccee02dfa2a, type: 2}
     - target: {fileID: 8704701589103800840, guid: ed1208aa606c7f849ae0b44e0e450a16,
         type: 3}
       propertyPath: m_Name
@@ -3895,6 +3955,21 @@ PrefabInstance:
         type: 3}
       propertyPath: m_RootOrder
       value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 8704701589103800847, guid: ed1208aa606c7f849ae0b44e0e450a16,
+        type: 3}
+      propertyPath: m_LocalScale.x
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 8704701589103800847, guid: ed1208aa606c7f849ae0b44e0e450a16,
+        type: 3}
+      propertyPath: m_LocalScale.y
+      value: 0.08
+      objectReference: {fileID: 0}
+    - target: {fileID: 8704701589103800847, guid: ed1208aa606c7f849ae0b44e0e450a16,
+        type: 3}
+      propertyPath: m_LocalScale.z
+      value: 0.08
       objectReference: {fileID: 0}
     - target: {fileID: 8704701589103800847, guid: ed1208aa606c7f849ae0b44e0e450a16,
         type: 3}
@@ -3946,5 +4021,15 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 8704701589288375155, guid: ed1208aa606c7f849ae0b44e0e450a16,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83265d2747b5c3949ba18ccee02dfa2a, type: 2}
+    - target: {fileID: 8704701589509411365, guid: ed1208aa606c7f849ae0b44e0e450a16,
+        type: 3}
+      propertyPath: m_Materials.Array.data[0]
+      value: 
+      objectReference: {fileID: 2100000, guid: 83265d2747b5c3949ba18ccee02dfa2a, type: 2}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: ed1208aa606c7f849ae0b44e0e450a16, type: 3}
