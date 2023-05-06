@@ -17,7 +17,7 @@ public class ShipCommandOneHand : MonoBehaviour
     [SerializeField] private Rigidbody _shipRigidbody;
 
     [SerializeField] private float _translationsSensibility = 1.0f;
-    [SerializeField] private float _rotationsSensibility = 1.0f;
+    
 
     [SerializeField] private TextMeshProUGUI _debugText1;
     [SerializeField] private TextMeshProUGUI _debugText2;
@@ -40,6 +40,7 @@ public class ShipCommandOneHand : MonoBehaviour
     private int _handsInControl = 0;
 
     [Space(10)]
+    [SerializeField] private float _rotationsSensibility = 0.0025f;
     [SerializeField] private float _rotationXFactor = 1;
     [SerializeField] private float _rotationYFactor = 1;
     [SerializeField] private float _rotationZFactor = 1;
@@ -54,9 +55,17 @@ public class ShipCommandOneHand : MonoBehaviour
 
     private void Update()
     {
+        Translation();        
+        Rotation();
 
-        // TRANSLATION:
-        if (_controller.selectInteractionState.value > 0.5f)
+        // Pour debugger :
+        // if (_translationController.activateInteractionState.value > 0.5f || _rotationController.activateInteractionState.value > 0.5f) SceneManager.LoadSceneAsync(0);
+    }
+       
+
+    private void Translation()
+    {
+        if (_controller.activateInteractionState.value > 0.5f)
         {
             if (_enterInTranslationControlMode)
             {
@@ -79,27 +88,34 @@ public class ShipCommandOneHand : MonoBehaviour
 
             _enterInTranslationControlMode = true;
         }
+    }
 
-
-        // ROTATION:
-        if (_controller.activateInteractionState.value > 0.5f)
+    private void Rotation()
+    {
+        if (_controller.selectInteractionState.value > 0.5f)
         {
             if (_enterInRotationControlMode)
             {
                 InitialiseRotation();
                 _handsInControl++;
             }
-                        
-           
-            _shipMarker.transform.localRotation = Quaternion.Inverse(_handInitialRotation) * _controller.transform.localRotation;
 
-                       
-            //_rotationForceToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles - _zeroPointMarker.transform.localRotation.eulerAngles;
+            _shipMarker.transform.localRotation = Quaternion.Inverse(_handInitialRotation) * _controller.transform.localRotation;
             _rotationForceToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles;
+
+
+           // _debugText1.text = _rotationForceToApplyToTheShip.z.ToString();
+
             CorrectAngle(ref _rotationForceToApplyToTheShip.x, _rotationXFactor);
             CorrectAngle(ref _rotationForceToApplyToTheShip.y, _rotationYFactor);
             CorrectAngle(ref _rotationForceToApplyToTheShip.z, _rotationZFactor);
+
+
+            //_debugText2.text = _rotationForceToApplyToTheShip.z.ToString();
+
             ShipRotation();
+
+
         }
         else if (!_enterInRotationControlMode)
         {
@@ -110,17 +126,17 @@ public class ShipCommandOneHand : MonoBehaviour
 
             _enterInRotationControlMode = true;
         }
-
-
-        // Pour debugger :
-        // if (_translationController.activateInteractionState.value > 0.5f || _rotationController.activateInteractionState.value > 0.5f) SceneManager.LoadSceneAsync(0);
     }
 
     private float CorrectAngle(ref float angle, float factor)
     {
-        angle *= factor;
+        
         if (angle < -180) angle += 360;
         else if (angle > 180) angle -= 360;
+
+        angle *= factor;
+
+
         return angle;
     }
 

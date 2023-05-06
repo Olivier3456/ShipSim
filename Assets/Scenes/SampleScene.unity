@@ -3819,12 +3819,12 @@ MonoBehaviour:
   _shipMarker: {fileID: 1520072395}
   _shipRigidbody: {fileID: 929682456}
   _translationsSensibility: 5
-  _rotationsSensibility: 0.0025
   _debugText1: {fileID: 0}
   _debugText2: {fileID: 0}
+  _rotationsSensibility: 0.008
   _rotationXFactor: 1
   _rotationYFactor: 1
-  _rotationZFactor: 1
+  _rotationZFactor: 0.25
 --- !u!1001 &7209673324851109933
 PrefabInstance:
   m_ObjectHideFlags: 0
