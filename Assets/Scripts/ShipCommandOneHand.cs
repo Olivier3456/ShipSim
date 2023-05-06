@@ -3,22 +3,21 @@ using System.Collections.Generic;
 using TMPro;
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UIElements;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class ShipCommandOneHand : MonoBehaviour
 {
-    [SerializeField] private XRBaseController _controller;
-    [SerializeField] private GameObject _hand;
+    [SerializeField] private XRBaseController _controller;    
 
     [SerializeField] private GameObject _zeroPointMarker;
-
     [SerializeField] private GameObject _shipMarker;
-
     [SerializeField] private Rigidbody _shipRigidbody;
-
-    [SerializeField] private float _translationsSensibility = 1.0f;
-    
-
+    [Space(10)]
+    [SerializeField] Material _shipMarkerTranslationMaterial;
+    [SerializeField] Material _shipMarkerRotationMaterial;
+    [SerializeField] Material _shipMarkerTranslationAndRotationMaterial;
+    [Space(10)]
     [SerializeField] private TextMeshProUGUI _debugText1;
     [SerializeField] private TextMeshProUGUI _debugText2;
 
@@ -28,7 +27,7 @@ public class ShipCommandOneHand : MonoBehaviour
 
 
     private Vector3 _translationForcesToApplyToTheShip;
-    private Vector3 _rotationForceToApplyToTheShip;
+    private Vector3 _rotationForcesToApplyToTheShip;
 
     private Vector3 _shipMarkerInitialPosition;
     private Quaternion _shipMarkerInitialRotation;
@@ -38,18 +37,30 @@ public class ShipCommandOneHand : MonoBehaviour
     private Quaternion _handInitialRotation;
 
     private int _handsInControl = 0;
+    
+    private Renderer[] _shipMarkerChildrenRenderers;
 
     [Space(10)]
-    [SerializeField] private float _rotationsSensibility = 0.0025f;
-    [SerializeField] private float _rotationXFactor = 1;
-    [SerializeField] private float _rotationYFactor = 1;
-    [SerializeField] private float _rotationZFactor = 1;
+    [SerializeField] private float _translationsSensibility = 5.0f;
+    [SerializeField] private float _forwardFactor = 2.0f;
+    [SerializeField] private float _backwardFactor = 2.0f;
+    [SerializeField] private float _rightFactor = 1.0f;
+    [SerializeField] private float _leftFactor = 1.0f;
+    [SerializeField] private float _upFactor = 1.0f;
+    [SerializeField] private float _downFactor = 1.0f;
+    [Space(10)]
+    [SerializeField] private float _rotationsSensibility = 0.008f;
+    [SerializeField] private float _rotationXFactor = 1.0f;
+    [SerializeField] private float _rotationYFactor = 1.0f;
+    [SerializeField] private float _rotationZFactor = 0.25f;
        
 
     private void Start()
     {
         _shipMarkerInitialPosition = _shipMarker.transform.localPosition;
         _shipMarkerInitialRotation = _shipMarker.transform.localRotation;
+
+        _shipMarkerChildrenRenderers = _shipMarker.GetComponentsInChildren<Renderer>();
     }
 
 
@@ -69,23 +80,26 @@ public class ShipCommandOneHand : MonoBehaviour
         {
             if (_enterInTranslationControlMode)
             {
-                InitialiseTranslation();
                 _handsInControl++;
+                InitialiseTranslation();                
             }
 
             _translationForcesToApplyToTheShip = _controller.transform.localPosition - _handInitialPosition;
             _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition + _translationForcesToApplyToTheShip;
+
+            _translationForcesToApplyToTheShip.x = _translationForcesToApplyToTheShip.x > 0 ? _translationForcesToApplyToTheShip.x *= _rightFactor : _translationForcesToApplyToTheShip.x *= _leftFactor;
+            _translationForcesToApplyToTheShip.y = _translationForcesToApplyToTheShip.y > 0 ? _translationForcesToApplyToTheShip.y *= _upFactor : _translationForcesToApplyToTheShip.y *= _downFactor;
+            _translationForcesToApplyToTheShip.z = _translationForcesToApplyToTheShip.z > 0 ? _translationForcesToApplyToTheShip.z *= _forwardFactor : _translationForcesToApplyToTheShip.z *= _backwardFactor;
+
+
             ShipTranslation();
-
-
         }
         else if (!_enterInTranslationControlMode)
         {
             _handsInControl--;
-            if (_handsInControl == 0) _shipMarker.SetActive(false);
-
+            ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);            
+                
             _shipMarker.transform.localPosition = _shipMarkerInitialPosition;
-
             _enterInTranslationControlMode = true;
         }
     }
@@ -96,47 +110,33 @@ public class ShipCommandOneHand : MonoBehaviour
         {
             if (_enterInRotationControlMode)
             {
-                InitialiseRotation();
                 _handsInControl++;
+                InitialiseRotation();                
             }
 
             _shipMarker.transform.localRotation = Quaternion.Inverse(_handInitialRotation) * _controller.transform.localRotation;
-            _rotationForceToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles;
+            _rotationForcesToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles;           
 
-
-           // _debugText1.text = _rotationForceToApplyToTheShip.z.ToString();
-
-            CorrectAngle(ref _rotationForceToApplyToTheShip.x, _rotationXFactor);
-            CorrectAngle(ref _rotationForceToApplyToTheShip.y, _rotationYFactor);
-            CorrectAngle(ref _rotationForceToApplyToTheShip.z, _rotationZFactor);
-
-
-            //_debugText2.text = _rotationForceToApplyToTheShip.z.ToString();
-
+            CorrectAngle(ref _rotationForcesToApplyToTheShip.x, _rotationXFactor);
+            CorrectAngle(ref _rotationForcesToApplyToTheShip.y, _rotationYFactor);
+            CorrectAngle(ref _rotationForcesToApplyToTheShip.z, _rotationZFactor);
             ShipRotation();
-
-
         }
         else if (!_enterInRotationControlMode)
         {
             _handsInControl--;
-            if (_handsInControl == 0) _shipMarker.SetActive(false);
+            ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);            
 
             _shipMarker.transform.localRotation = _shipMarkerInitialRotation;
-
             _enterInRotationControlMode = true;
         }
     }
 
     private float CorrectAngle(ref float angle, float factor)
-    {
-        
+    {        
         if (angle < -180) angle += 360;
         else if (angle > 180) angle -= 360;
-
         angle *= factor;
-
-
         return angle;
     }
 
@@ -148,25 +148,47 @@ public class ShipCommandOneHand : MonoBehaviour
 
     private void ShipRotation()
     {
-        _shipRigidbody.AddRelativeTorque(_rotationForceToApplyToTheShip * _rotationsSensibility);
+        _shipRigidbody.AddRelativeTorque(_rotationForcesToApplyToTheShip * _rotationsSensibility);
     }
 
 
     private void InitialiseTranslation()
     {
         _enterInTranslationControlMode = false;
-
-        _shipMarker.SetActive(true);
-
+        
         _handInitialPosition = _controller.transform.localPosition;
+
+        ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);
     }
 
     private void InitialiseRotation()
     {
         _enterInRotationControlMode = false;
-
-        _shipMarker.SetActive(true);       
-
+        
         _handInitialRotation = _controller.transform.localRotation;
+
+        ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
+    }
+
+
+    private void ChangeShipMarkerDisplay(Material mat)
+    {
+        if (_handsInControl == 0) _shipMarker.SetActive(false);
+        else _shipMarker.SetActive(true);
+
+        if (_handsInControl == 2)
+        {
+            for (int i = 0; i < _shipMarkerChildrenRenderers.Length; i++)
+            {
+                _shipMarkerChildrenRenderers[i].material = _shipMarkerTranslationAndRotationMaterial;
+            }
+        }
+        else if (_handsInControl == 1)
+        {
+            for (int i = 0; i < _shipMarkerChildrenRenderers.Length; i++)
+            {
+                _shipMarkerChildrenRenderers[i].material = mat;
+            }
+        }
     }
 }

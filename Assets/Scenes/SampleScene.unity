@@ -3814,13 +3814,24 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _controller: {fileID: 2089313816}
-  _hand: {fileID: 0}
   _zeroPointMarker: {fileID: 1279726438}
   _shipMarker: {fileID: 1520072395}
   _shipRigidbody: {fileID: 929682456}
-  _translationsSensibility: 5
+  _shipMarkerTranslationMaterial: {fileID: 2100000, guid: ef5ef1d82b1fe214d8ad05dce8f54506,
+    type: 2}
+  _shipMarkerRotationMaterial: {fileID: 2100000, guid: 83265d2747b5c3949ba18ccee02dfa2a,
+    type: 2}
+  _shipMarkerTranslationAndRotationMaterial: {fileID: 2100000, guid: 5ab593ed798d72441b50226345d55974,
+    type: 2}
   _debugText1: {fileID: 0}
   _debugText2: {fileID: 0}
+  _translationsSensibility: 5
+  _forwardFactor: 2
+  _backwardFactor: 2
+  _rightFactor: 1
+  _leftFactor: 1
+  _upFactor: 1
+  _downFactor: 1
   _rotationsSensibility: 0.008
   _rotationXFactor: 1
   _rotationYFactor: 1
