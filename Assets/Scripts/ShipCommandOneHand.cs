@@ -30,9 +30,12 @@ public class ShipCommandOneHand : MonoBehaviour
     private Vector3 _translationForcesToApplyToTheShip;
     private Vector3 _rotationForceToApplyToTheShip;
 
+    private Vector3 _shipMarkerInitialPosition;
     private Quaternion _shipMarkerInitialRotation;
-
+    
     private Vector3 _handInitialPosition;
+
+    private Quaternion _handInitialRotation;
 
     private int _handsInControl = 0;
 
@@ -40,14 +43,11 @@ public class ShipCommandOneHand : MonoBehaviour
     [SerializeField] private float _rotationXFactor = 1;
     [SerializeField] private float _rotationYFactor = 1;
     [SerializeField] private float _rotationZFactor = 1;
-
-
-    // [SerializeField] private LineRenderer _lineRenderer;
-    //private Vector3[] _zeroPointMarkerAndShipMarkerPositions = new Vector3[2];
-
+       
 
     private void Start()
     {
+        _shipMarkerInitialPosition = _shipMarker.transform.localPosition;
         _shipMarkerInitialRotation = _shipMarker.transform.localRotation;
     }
 
@@ -69,15 +69,13 @@ public class ShipCommandOneHand : MonoBehaviour
             ShipTranslation();
 
 
-            //_zeroPointMarkerAndShipMarkerPositions[0] = _zeroPointMarker.transform.position;
-            //_zeroPointMarkerAndShipMarkerPositions[1] = _shipMarker.transform.position;
-            //_lineRenderer.SetPositions(_zeroPointMarkerAndShipMarkerPositions);
-
         }
         else if (!_enterInTranslationControlMode)
         {
             _handsInControl--;
             if (_handsInControl == 0) _shipMarker.SetActive(false);
+
+            _shipMarker.transform.localPosition = _shipMarkerInitialPosition;
 
             _enterInTranslationControlMode = true;
         }
@@ -91,14 +89,16 @@ public class ShipCommandOneHand : MonoBehaviour
                 InitialiseRotation();
                 _handsInControl++;
             }
+                        
+           
+            _shipMarker.transform.localRotation = Quaternion.Inverse(_handInitialRotation) * _controller.transform.localRotation;
 
-            _shipMarker.transform.localRotation = _controller.transform.localRotation;  // Ce serait bien qu'elle se base sur la rotation de _zeroPointMarker.
-
-            _rotationForceToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles - _zeroPointMarker.transform.localRotation.eulerAngles;
+                       
+            //_rotationForceToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles - _zeroPointMarker.transform.localRotation.eulerAngles;
+            _rotationForceToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles;
             CorrectAngle(ref _rotationForceToApplyToTheShip.x, _rotationXFactor);
             CorrectAngle(ref _rotationForceToApplyToTheShip.y, _rotationYFactor);
             CorrectAngle(ref _rotationForceToApplyToTheShip.z, _rotationZFactor);
-
             ShipRotation();
         }
         else if (!_enterInRotationControlMode)
@@ -149,8 +149,8 @@ public class ShipCommandOneHand : MonoBehaviour
     {
         _enterInRotationControlMode = false;
 
-        _shipMarker.SetActive(true);
+        _shipMarker.SetActive(true);       
 
-        _zeroPointMarker.transform.rotation = _controller.transform.rotation;
+        _handInitialRotation = _controller.transform.localRotation;
     }
 }
