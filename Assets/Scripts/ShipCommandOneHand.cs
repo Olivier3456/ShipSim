@@ -8,7 +8,7 @@ using UnityEngine.XR.Interaction.Toolkit;
 
 public class ShipCommandOneHand : MonoBehaviour
 {
-    [SerializeField] private XRBaseController _controller;    
+    [SerializeField] private XRBaseController _controller;
 
     [SerializeField] private GameObject _zeroPointMarker;
     [SerializeField] private GameObject _shipMarker;
@@ -31,13 +31,13 @@ public class ShipCommandOneHand : MonoBehaviour
 
     private Vector3 _shipMarkerInitialPosition;
     private Quaternion _shipMarkerInitialRotation;
-    
+
     private Vector3 _handInitialPosition;
 
     private Quaternion _handInitialRotation;
 
     private int _handsInControl = 0;
-    
+
     private Renderer[] _shipMarkerChildrenRenderers;
 
     [Space(10)]
@@ -53,7 +53,9 @@ public class ShipCommandOneHand : MonoBehaviour
     [SerializeField] private float _rotationXFactor = 1.0f;
     [SerializeField] private float _rotationYFactor = 1.0f;
     [SerializeField] private float _rotationZFactor = 0.25f;
-       
+    [Space(10)]
+    [SerializeField] private float _maxShipMarkerTranslation = 0.45f;
+
 
     private void Start()
     {
@@ -66,13 +68,13 @@ public class ShipCommandOneHand : MonoBehaviour
 
     private void Update()
     {
-        Translation();        
+        Translation();
         Rotation();
 
         // Pour debugger :
         // if (_translationController.activateInteractionState.value > 0.5f || _rotationController.activateInteractionState.value > 0.5f) SceneManager.LoadSceneAsync(0);
     }
-       
+
 
     private void Translation()
     {
@@ -81,24 +83,37 @@ public class ShipCommandOneHand : MonoBehaviour
             if (_enterInTranslationControlMode)
             {
                 _handsInControl++;
-                InitialiseTranslation();                
+                InitialiseTranslation();
             }
 
             _translationForcesToApplyToTheShip = _controller.transform.localPosition - _handInitialPosition;
+
+
+            //Mathf.Clamp(_translationForcesToApplyToTheShip.x, -_maxShipMarkerTranslation, _maxShipMarkerTranslation);
+            //Mathf.Clamp(_translationForcesToApplyToTheShip.y, -_maxShipMarkerTranslation, _maxShipMarkerTranslation);
+            //Mathf.Clamp(_translationForcesToApplyToTheShip.z, -_maxShipMarkerTranslation, _maxShipMarkerTranslation);
+
+
+            // Limits the shipmarker translations inside a sphere:
+            float distance = _translationForcesToApplyToTheShip.magnitude;
+            if (distance >= _maxShipMarkerTranslation)
+            {
+                _translationForcesToApplyToTheShip *= _maxShipMarkerTranslation / distance;
+            }           
             _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition + _translationForcesToApplyToTheShip;
+
 
             _translationForcesToApplyToTheShip.x = _translationForcesToApplyToTheShip.x > 0 ? _translationForcesToApplyToTheShip.x *= _rightFactor : _translationForcesToApplyToTheShip.x *= _leftFactor;
             _translationForcesToApplyToTheShip.y = _translationForcesToApplyToTheShip.y > 0 ? _translationForcesToApplyToTheShip.y *= _upFactor : _translationForcesToApplyToTheShip.y *= _downFactor;
             _translationForcesToApplyToTheShip.z = _translationForcesToApplyToTheShip.z > 0 ? _translationForcesToApplyToTheShip.z *= _forwardFactor : _translationForcesToApplyToTheShip.z *= _backwardFactor;
-
 
             ShipTranslation();
         }
         else if (!_enterInTranslationControlMode)
         {
             _handsInControl--;
-            ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);            
-                
+            ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
+
             _shipMarker.transform.localPosition = _shipMarkerInitialPosition;
             _enterInTranslationControlMode = true;
         }
@@ -111,11 +126,11 @@ public class ShipCommandOneHand : MonoBehaviour
             if (_enterInRotationControlMode)
             {
                 _handsInControl++;
-                InitialiseRotation();                
+                InitialiseRotation();
             }
 
             _shipMarker.transform.localRotation = Quaternion.Inverse(_handInitialRotation) * _controller.transform.localRotation;
-            _rotationForcesToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles;           
+            _rotationForcesToApplyToTheShip = _shipMarker.transform.localRotation.eulerAngles;
 
             CorrectAngle(ref _rotationForcesToApplyToTheShip.x, _rotationXFactor);
             CorrectAngle(ref _rotationForcesToApplyToTheShip.y, _rotationYFactor);
@@ -125,7 +140,7 @@ public class ShipCommandOneHand : MonoBehaviour
         else if (!_enterInRotationControlMode)
         {
             _handsInControl--;
-            ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);            
+            ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);
 
             _shipMarker.transform.localRotation = _shipMarkerInitialRotation;
             _enterInRotationControlMode = true;
@@ -133,7 +148,7 @@ public class ShipCommandOneHand : MonoBehaviour
     }
 
     private float CorrectAngle(ref float angle, float factor)
-    {        
+    {
         if (angle < -180) angle += 360;
         else if (angle > 180) angle -= 360;
         angle *= factor;
@@ -155,7 +170,7 @@ public class ShipCommandOneHand : MonoBehaviour
     private void InitialiseTranslation()
     {
         _enterInTranslationControlMode = false;
-        
+
         _handInitialPosition = _controller.transform.localPosition;
 
         ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);
@@ -164,7 +179,7 @@ public class ShipCommandOneHand : MonoBehaviour
     private void InitialiseRotation()
     {
         _enterInRotationControlMode = false;
-        
+
         _handInitialRotation = _controller.transform.localRotation;
 
         ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
