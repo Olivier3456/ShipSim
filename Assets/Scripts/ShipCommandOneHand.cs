@@ -59,6 +59,8 @@ public class ShipCommandOneHand : MonoBehaviour
 
     private void Start()
     {
+        _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
+        _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
         _shipMarkerChildrenRenderers = _shipMarker.GetComponentsInChildren<Renderer>();
     }
 
