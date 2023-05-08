@@ -100,7 +100,7 @@ public class ShipCommandOneHand : MonoBehaviour
             _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition + _translationForcesToApplyToTheShip;
 
             _backwardReactorValue = -Mathf.Clamp(_translationForcesToApplyToTheShip.z, -Mathf.Infinity, 0);
-            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, _backwardReactorValue * (1 / _maxTranslationInputValue));
+            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, _backwardReactorValue * (1 / _maxTranslationInputValue), false);
 
 
             _translationForcesToApplyToTheShip.x = _translationForcesToApplyToTheShip.x > 0 ? _translationForcesToApplyToTheShip.x *= _rightFactor : _translationForcesToApplyToTheShip.x *= _leftFactor;
@@ -115,26 +115,28 @@ public class ShipCommandOneHand : MonoBehaviour
             ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
 
             // _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
+            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, 0, true);
             StartCoroutine(LerpShipMarkerPositionToZeroPoint());
 
-            _enterInTranslationControlMode = true;
-            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, 0);
+            _enterInTranslationControlMode = true;            
         }
     }
 
-
-
-
     IEnumerator LerpShipMarkerPositionToZeroPoint()
-    {
-        float time = 0;
-        float duration = 0.25f;
-        Vector3 initialPosition = _shipMarker.transform.localPosition;
-        while (time < duration)
+    {        
+        // float duration = 0.25f;
+        // Vector3 initialPosition = _shipMarker.transform.localPosition;
+        float timeElapsed = 0;        
+
+        while (Vector3.Distance(_shipMarker.transform.localPosition, _zeroPointMarker.transform.localPosition) >= 0.001f)
         {
             if (_controller.activateInteractionState.value > 0.5f) yield break;
-            time += Time.deltaTime;
-            _shipMarker.transform.localPosition = Vector3.Lerp(initialPosition, _zeroPointMarker.transform.localPosition, time * (1 / duration));
+            timeElapsed += Time.deltaTime;
+            _shipMarker.transform.localPosition = Vector3.Lerp(_shipMarker.transform.localPosition, _zeroPointMarker.transform.localPosition, 0.2f);
+
+            // Pour une vitesse constante :
+            //    _shipMarker.transform.localPosition = Vector3.Lerp(initialPosition, _zeroPointMarker.transform.localPosition, time * (1 / duration));
+            
             yield return null;
         }
         _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
@@ -215,6 +217,7 @@ public class ShipCommandOneHand : MonoBehaviour
         //if (_ActiveControlModes == 0) _shipMarker.SetActive(false);
         //else _shipMarker.SetActive(true);
         if (_ActiveControlModes > 0) _shipMarker.SetActive(true);
+
 
         if (_ActiveControlModes == 2)
         {
