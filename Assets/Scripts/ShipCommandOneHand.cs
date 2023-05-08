@@ -48,8 +48,8 @@ public class ShipCommandOneHand : MonoBehaviour
     [SerializeField] private float _rotationZFactor = 0.25f;
     [Space(10)]
     [SerializeField] private float _maxTranslationInputValue = 0.4f;
-    
-    
+
+
     private float _backwardReactorValue;
     private float _upReactorValue;
     private float _downReactorValue;
@@ -61,19 +61,19 @@ public class ShipCommandOneHand : MonoBehaviour
     {
         _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
         _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
-        _shipMarkerChildrenRenderers = _shipMarker.GetComponentsInChildren<Renderer>();        
+        _shipMarkerChildrenRenderers = _shipMarker.GetComponentsInChildren<Renderer>();
     }
 
 
     private void Update()
-    {        
+    {
         Translation();
         Rotation();
 
         // Pour debugger :
         // if (_translationController.activateInteractionState.value > 0.5f || _rotationController.activateInteractionState.value > 0.5f) SceneManager.LoadSceneAsync(0);
 
-               
+
     }
 
 
@@ -102,7 +102,7 @@ public class ShipCommandOneHand : MonoBehaviour
             _backwardReactorValue = -Mathf.Clamp(_translationForcesToApplyToTheShip.z, -Mathf.Infinity, 0);
             _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, _backwardReactorValue * (1 / _maxTranslationInputValue));
 
-            
+
             _translationForcesToApplyToTheShip.x = _translationForcesToApplyToTheShip.x > 0 ? _translationForcesToApplyToTheShip.x *= _rightFactor : _translationForcesToApplyToTheShip.x *= _leftFactor;
             _translationForcesToApplyToTheShip.y = _translationForcesToApplyToTheShip.y > 0 ? _translationForcesToApplyToTheShip.y *= _upFactor : _translationForcesToApplyToTheShip.y *= _downFactor;
             _translationForcesToApplyToTheShip.z = _translationForcesToApplyToTheShip.z > 0 ? _translationForcesToApplyToTheShip.z *= _forwardFactor : _translationForcesToApplyToTheShip.z *= _backwardFactor;
@@ -114,11 +114,34 @@ public class ShipCommandOneHand : MonoBehaviour
             _ActiveControlModes--;
             ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
 
-            _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
+            // _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
+            StartCoroutine(LerpShipMarkerPositionToZeroPoint());
+
             _enterInTranslationControlMode = true;
             _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, 0);
         }
     }
+
+
+
+
+    IEnumerator LerpShipMarkerPositionToZeroPoint()
+    {
+        float time = 0;
+        float duration = 0.25f;
+        Vector3 initialPosition = _shipMarker.transform.localPosition;
+        while (time < duration)
+        {
+            if (_controller.activateInteractionState.value > 0.5f) yield break;
+            time += Time.deltaTime;
+            _shipMarker.transform.localPosition = Vector3.Lerp(initialPosition, _zeroPointMarker.transform.localPosition, time * (1 / duration));
+            yield return null;
+        }
+        _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
+        if (_ActiveControlModes == 0) _shipMarker.SetActive(false);
+    }
+
+
 
     private void Rotation()
     {
@@ -189,8 +212,9 @@ public class ShipCommandOneHand : MonoBehaviour
 
     private void ChangeShipMarkerDisplay(Material mat)
     {
-        if (_ActiveControlModes == 0) _shipMarker.SetActive(false);
-        else _shipMarker.SetActive(true);
+        //if (_ActiveControlModes == 0) _shipMarker.SetActive(false);
+        //else _shipMarker.SetActive(true);
+        if (_ActiveControlModes > 0) _shipMarker.SetActive(true);
 
         if (_ActiveControlModes == 2)
         {
