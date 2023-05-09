@@ -26,13 +26,20 @@ public class ThrustersManager : MonoBehaviour
     [SerializeField] private Thruster _forwardThruster;
     public Thruster ForwardThruster { get { return _forwardThruster; } }
 
+    [SerializeField] private Thruster _rightThruster;
+    public Thruster RightThruster { get { return _rightThruster; } }
 
-    public void ChangeThrusterValues(Thruster thruster, bool decreaseOverTimer, float audioSourceVolume = 0)
+    [SerializeField] private Thruster _leftThruster;
+    public Thruster LeftThruster { get { return _leftThruster; } }
+
+
+    public void ChangeThrusterValues(Thruster thruster, bool decreaseOverTimer, float value = 0)
     {        
         if (!decreaseOverTimer)
         {
             thruster.IsActive = true;
-            thruster.ThrusterAudioSource.volume = audioSourceVolume;
+            thruster.ThrusterAudioSource.volume = value;
+            thruster.ThrusterAudioSource.pitch = 1 + (value * 0.5f);
         }
         else
         {
@@ -46,6 +53,7 @@ public class ThrustersManager : MonoBehaviour
         if (thruster.ThrusterAudioSource.volume >= 0.01f && !thruster.IsActive)
         {
             thruster.ThrusterAudioSource.volume -= Time.deltaTime;
+            thruster.ThrusterAudioSource.pitch -= Time.deltaTime;
             yield return null;
             StartCoroutine(DecreaseThrusterValuesOverTime(thruster));
         }        
