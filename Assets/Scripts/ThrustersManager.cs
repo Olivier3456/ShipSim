@@ -24,7 +24,7 @@ public class ThrustersManager : MonoBehaviour
     public Thruster BackWardThruster { get { return _backwardThruster; } }
 
 
-    public void ChangeThrusterValues(Thruster thruster, float audioSourceVolume, bool decreaseOverTimer)
+    public void ChangeThrusterValues(Thruster thruster, bool decreaseOverTimer, float audioSourceVolume = 0)
     {        
         if (!decreaseOverTimer)
         {
