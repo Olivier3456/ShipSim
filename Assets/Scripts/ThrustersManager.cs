@@ -11,7 +11,7 @@ public class Thruster
     [SerializeField] private AudioSource _audioSource;
     private float value1;
     private float value2;
-    public bool IsActive;
+    [HideInInspector] public bool IsActive;
         
     public ParticleSystem ThrusterParticleSystem { get { return _particleSystem; } }
     public AudioSource ThrusterAudioSource { get { return _audioSource; } } 
@@ -21,7 +21,10 @@ public class Thruster
 public class ThrustersManager : MonoBehaviour
 {
     [SerializeField] private Thruster _backwardThruster;
-    public Thruster BackWardThruster { get { return _backwardThruster; } }
+    public Thruster BackwardThruster { get { return _backwardThruster; } }
+
+    [SerializeField] private Thruster _forwardThruster;
+    public Thruster ForwardThruster { get { return _forwardThruster; } }
 
 
     public void ChangeThrusterValues(Thruster thruster, bool decreaseOverTimer, float audioSourceVolume = 0)

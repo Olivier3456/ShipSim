@@ -49,7 +49,7 @@ public class ShipCommandOneHand : MonoBehaviour
     [Space(10)]
     [SerializeField] private float _maxTranslationInputValue = 0.4f;
 
-
+    private float _forwardReactorValue;
     private float _backwardReactorValue;
     private float _upReactorValue;
     private float _downReactorValue;
@@ -99,8 +99,13 @@ public class ShipCommandOneHand : MonoBehaviour
 
             _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition + _translationForcesToApplyToTheShip;
 
+
             _backwardReactorValue = -Mathf.Clamp(_translationForcesToApplyToTheShip.z, -Mathf.Infinity, 0);
-            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, false, _backwardReactorValue * (1 / _maxTranslationInputValue));
+            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackwardThruster, false, _backwardReactorValue * (1 / _maxTranslationInputValue));
+
+            _forwardReactorValue = Mathf.Clamp(_translationForcesToApplyToTheShip.z, 0, Mathf.Infinity);
+            _thrustersManager.ChangeThrusterValues(_thrustersManager.ForwardThruster, false, _forwardReactorValue * (1 / _maxTranslationInputValue));
+
 
 
             _translationForcesToApplyToTheShip.x = _translationForcesToApplyToTheShip.x > 0 ? _translationForcesToApplyToTheShip.x *= _rightFactor : _translationForcesToApplyToTheShip.x *= _leftFactor;
@@ -114,7 +119,9 @@ public class ShipCommandOneHand : MonoBehaviour
             _ActiveControlModes--;
             ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
             
-            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackWardThruster, true);
+            _thrustersManager.ChangeThrusterValues(_thrustersManager.BackwardThruster, true);
+            _thrustersManager.ChangeThrusterValues(_thrustersManager.ForwardThruster, true);
+
             // _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
             StartCoroutine(LerpShipMarkerPositionToZeroPoint());
 
