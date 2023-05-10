@@ -7,12 +7,14 @@ using UnityEngine.Rendering;
 [Serializable]
 public class Thruster
 {
+    [SerializeField] private Transform _transform;
+    public Transform CenterPosition;
     [SerializeField] private ParticleSystem _particleSystem;
     [SerializeField] private AudioSource _audioSource;
 
     public ParticleSystem ThrusterParticleSystem { get { return _particleSystem; } }
     public AudioSource ThrusterAudioSource { get { return _audioSource; } }
-
+    public Transform ThrusterTransform { get { return _transform; } }     
 }
 
 public class ThrustersManager : MonoBehaviour
@@ -42,10 +44,17 @@ public class ThrustersManager : MonoBehaviour
     public Thruster DownThruster { get { return _downThruster; } }
 
 
+
+
+    [SerializeField] private Thruster _rotationThruster;
+    public Thruster RotationThruster { get { return _rotationThruster; } }
+
+
+
+
+
     public void ChangeThrusterValues(Thruster thruster, float value)
     {
-        //Debug.Log("ChangeThrusterValues : " + thruster + " " + value);
-
         if (value < 0.01f && thruster.ThrusterAudioSource.isPlaying)
         {
             thruster.ThrusterAudioSource.Stop();
@@ -54,9 +63,18 @@ public class ThrustersManager : MonoBehaviour
         {
             thruster.ThrusterAudioSource.Play();
         }
-        
-        thruster.ThrusterAudioSource.volume = value;
-        thruster.ThrusterAudioSource.pitch = 1 + (value * 0.5f);
+        else if (value > 0.01f)
+        {
+            thruster.ThrusterAudioSource.volume = value;
+            thruster.ThrusterAudioSource.pitch = 1 + (value * 0.5f);
+        }
+    }
+
+
+    public void ChangeRotationThrusterValues(Thruster thruster, float value, Vector3 rotation)
+    {
+        ChangeThrusterValues(thruster, value);
+        thruster.ThrusterTransform.localPosition = thruster.CenterPosition.localPosition + rotation.normalized * 2;
     }
 
 
