@@ -35,19 +35,21 @@ public class ShipCommandOneHand : MonoBehaviour
 
     [Space(10)]
     [SerializeField] private float _translationsSensibility = 5.0f;
-    [SerializeField] private float _forwardFactor = 2.0f;
-    [SerializeField] private float _backwardFactor = 2.0f;
-    [SerializeField] private float _rightFactor = 1.0f;
-    [SerializeField] private float _leftFactor = 1.0f;
-    [SerializeField] private float _upFactor = 1.0f;
-    [SerializeField] private float _downFactor = 1.0f;
-    [Space(10)]
-    [SerializeField] private float _rotationsSensibility = 0.0075f;
-    [SerializeField] private float _rotationXFactor = 1.0f;
-    [SerializeField] private float _rotationYFactor = 1.0f;
-    [SerializeField] private float _rotationZFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _forwardFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _backwardFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _rightFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _leftFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _upFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _downFactor = 1.0f;
     [Space(10)]
     [SerializeField] private float _maxTranslationInputValue = 0.4f;
+    [Space(20)]
+    [SerializeField] private float _rotationsSensibility = 0.0001f;
+    [SerializeField][Range(0, 1)] private float _rotationXFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _rotationYFactor = 1.0f;
+    [SerializeField][Range(0, 1)] private float _rotationZFactor = 1.0f;
+    
+    
 
 
     private void Start()
@@ -77,8 +79,7 @@ public class ShipCommandOneHand : MonoBehaviour
 
             _translationForcesToApplyToTheShip = _controller.transform.localPosition - _handInitialPosition;
 
-
-            // Limits the translation input values inside a sphere:
+                        
             _translationForcesToApplyToTheShip = LimitTranslationValue(_translationForcesToApplyToTheShip);
 
             _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition + _translationForcesToApplyToTheShip;
@@ -242,7 +243,7 @@ public class ShipCommandOneHand : MonoBehaviour
         return angle *= factor;
     }
 
-    private Vector3 LimitTranslationValue(Vector3 translation)
+    private Vector3 LimitTranslationValue(Vector3 translation) // Limits the translation input values inside a sphere.
     {
         float distance = translation.magnitude;
         if (distance >= _maxTranslationInputValue)
