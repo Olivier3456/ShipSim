@@ -53,17 +53,17 @@ public class ThrustersManager : MonoBehaviour
 
 
 
-    public void ChangeThrusterValues(Thruster thruster, float value)
+    public void ChangeThrusterValues(Thruster thruster, float value, float minimumValue = 0.01f)
     {
-        if (value < 0.01f && thruster.ThrusterAudioSource.isPlaying)
+        if (value < minimumValue && thruster.ThrusterAudioSource.isPlaying)
         {
             thruster.ThrusterAudioSource.Stop();
         }
-        else if (value > 0.01f && !thruster.ThrusterAudioSource.isPlaying)
+        else if (value > minimumValue && !thruster.ThrusterAudioSource.isPlaying)
         {
             thruster.ThrusterAudioSource.Play();
         }
-        else if (value > 0.01f)
+        else if (value > minimumValue)
         {
             thruster.ThrusterAudioSource.volume = value;
             thruster.ThrusterAudioSource.pitch = 1 + (value * 0.5f);
@@ -74,7 +74,7 @@ public class ThrustersManager : MonoBehaviour
     public void ChangeRotationThrusterValues(Thruster thruster, float value, Vector3 rotation)
     {
         ChangeThrusterValues(thruster, value);
-        thruster.ThrusterTransform.localPosition = thruster.CenterPosition.localPosition + rotation.normalized * 2;
+        thruster.ThrusterTransform.localPosition = thruster.CenterPosition.localPosition + rotation.normalized;
     }
 
 

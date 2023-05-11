@@ -223,6 +223,8 @@ public class ShipCommandOneHand : MonoBehaviour
 
             yield return null;
         }
+
+        CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3.zero);
         _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
         if (_ActiveControlModes == 0) _shipMarker.SetActive(false);
     }
@@ -260,7 +262,7 @@ public class ShipCommandOneHand : MonoBehaviour
         absRotation.z = Mathf.Abs(absRotation.z);
         float rotationThrusterValue = Mathf.Max(absRotation.x, absRotation.y, absRotation.z) / 180;
 
-        // Debug.Log(rotationThrusterValue);
+         Debug.Log(rotationThrusterValue);
 
         _thrustersManager.ChangeRotationThrusterValues(_thrustersManager.RotationThruster, rotationThrusterValue, rotation);
     }
