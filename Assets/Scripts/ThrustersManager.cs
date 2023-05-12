@@ -1,19 +1,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Rendering;
 
 [Serializable]
 public class Thruster
 {
-    [SerializeField] private Transform _transform;
-    public Transform CenterPosition;
+    [Tooltip("Only necessary for the rotations thruster")]
+    [SerializeField] private Transform _transform;    
     [SerializeField] private ParticleSystem _particleSystem;
-    [SerializeField] private AudioSource _audioSource;
+    [SerializeField] private AudioSource[] _audioSources;
 
     public ParticleSystem ThrusterParticleSystem { get { return _particleSystem; } }
-    public AudioSource ThrusterAudioSource { get { return _audioSource; } }
+    public AudioSource[] ThrusterAudioSource { get { return _audioSources; } }
     public Transform ThrusterTransform { get { return _transform; } }     
 }
 
@@ -43,8 +44,8 @@ public class ThrustersManager : MonoBehaviour
     [SerializeField] private Thruster _downThruster;
     public Thruster DownThruster { get { return _downThruster; } }
 
-
-
+    
+    
 
     [SerializeField] private Thruster _rotationThruster;
     public Thruster RotationThruster { get { return _rotationThruster; } }
@@ -55,26 +56,29 @@ public class ThrustersManager : MonoBehaviour
 
     public void ChangeThrusterValues(Thruster thruster, float value, float minimumValue = 0.01f)
     {
-        if (value < minimumValue && thruster.ThrusterAudioSource.isPlaying)
+        for (int i = 0; i < thruster.ThrusterAudioSource.Length; i++)
         {
-            thruster.ThrusterAudioSource.Stop();
-        }
-        else if (value > minimumValue && !thruster.ThrusterAudioSource.isPlaying)
-        {
-            thruster.ThrusterAudioSource.Play();
-        }
-        else if (value > minimumValue)
-        {
-            thruster.ThrusterAudioSource.volume = value;
-            thruster.ThrusterAudioSource.pitch = 1 + (value * 0.5f);
-        }
+            if (value < minimumValue && thruster.ThrusterAudioSource[i].isPlaying)
+            {
+                thruster.ThrusterAudioSource[i].Stop();
+            }
+            else if (value > minimumValue && !thruster.ThrusterAudioSource[i].isPlaying)
+            {
+                thruster.ThrusterAudioSource[i].Play();
+            }
+            else if (value > minimumValue)
+            {
+                thruster.ThrusterAudioSource[i].volume = value;
+                thruster.ThrusterAudioSource[i].pitch = 1 + (value * 0.5f);
+            }
+        }       
     }
 
 
-    public void ChangeRotationThrusterValues(Thruster thruster, float value, Vector3 rotation)
+    public void ChangeRotationThrusterValues(Thruster thruster, float value, Quaternion rotation)
     {
         ChangeThrusterValues(thruster, value);
-        thruster.ThrusterTransform.localPosition = thruster.CenterPosition.localPosition + rotation.normalized;
+        thruster.ThrusterTransform.localRotation = Quaternion.Inverse(rotation);
     }
 
 

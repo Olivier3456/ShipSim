@@ -42,7 +42,7 @@ public class ShipCommandOneHand : MonoBehaviour
     [SerializeField][Range(0, 1)] private float _upFactor = 1.0f;
     [SerializeField][Range(0, 1)] private float _downFactor = 1.0f;
     [Space(10)]
-    [SerializeField] private float _maxTranslationInputValue = 0.4f;
+    [SerializeField] private float _maxTranslationInputValue = 0.2f;
     [Space(20)]
     [SerializeField] private float _rotationsSensibility = 0.0001f;
     [SerializeField][Range(0, 1)] private float _rotationXFactor = 1.0f;
@@ -57,6 +57,8 @@ public class ShipCommandOneHand : MonoBehaviour
         _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition;
         _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
         _shipMarkerChildrenRenderers = _shipMarker.GetComponentsInChildren<Renderer>();
+
+        _shipRigidbody.centerOfMass = _shipRigidbody.transform.position;
     }
 
 
@@ -78,11 +80,12 @@ public class ShipCommandOneHand : MonoBehaviour
             }
 
             _translationForcesToApplyToTheShip = _controller.transform.localPosition - _handInitialPosition;
-
                         
             _translationForcesToApplyToTheShip = LimitTranslationValue(_translationForcesToApplyToTheShip);
 
             _shipMarker.transform.localPosition = _zeroPointMarker.transform.localPosition + _translationForcesToApplyToTheShip;
+
+            _translationForcesToApplyToTheShip *= 1 / _maxTranslationInputValue;
 
             CalculateAndSendThrustersTranslationValuesToThrustersManager(_translationForcesToApplyToTheShip);
 
@@ -122,7 +125,7 @@ public class ShipCommandOneHand : MonoBehaviour
             CorrectAngle(ref _rotationForcesToApplyToTheShip.y);
             CorrectAngle(ref _rotationForcesToApplyToTheShip.z);
 
-            CalculateAndSendThrustersRotationValuesToThrustersManager(_rotationForcesToApplyToTheShip);
+            CalculateAndSendThrustersRotationValuesToThrustersManager(_rotationForcesToApplyToTheShip, _shipMarker.transform.localRotation);
 
             ApplyRotationFactor(ref _rotationForcesToApplyToTheShip.x, _rotationXFactor);
             ApplyRotationFactor(ref _rotationForcesToApplyToTheShip.y, _rotationYFactor);
@@ -153,45 +156,7 @@ public class ShipCommandOneHand : MonoBehaviour
     }
 
 
-    private void InitialiseTranslation()
-    {
-        _enterInTranslationControlMode = false;
-
-        _handInitialPosition = _controller.transform.localPosition;
-
-        ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);
-    }
-
-    private void InitialiseRotation()
-    {
-        _enterInRotationControlMode = false;
-
-        _handInitialRotation = _controller.transform.localRotation;
-
-        ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
-    }
-
-
-    private void ChangeShipMarkerDisplay(Material mat)
-    {
-        if (_ActiveControlModes > 0) _shipMarker.SetActive(true);
-
-
-        if (_ActiveControlModes == 2)
-        {
-            for (int i = 0; i < _shipMarkerChildrenRenderers.Length; i++)
-            {
-                _shipMarkerChildrenRenderers[i].material = _shipMarkerTranslationAndRotationMaterial;
-            }
-        }
-        else if (_ActiveControlModes == 1)
-        {
-            for (int i = 0; i < _shipMarkerChildrenRenderers.Length; i++)
-            {
-                _shipMarkerChildrenRenderers[i].material = mat;
-            }
-        }
-    }
+    
 
     IEnumerator LerpShipMarkerPositionToZeroPoint()
     {
@@ -220,12 +185,12 @@ public class ShipCommandOneHand : MonoBehaviour
             CorrectAngle(ref rotation.x);
             CorrectAngle(ref rotation.y);
             CorrectAngle(ref rotation.z);
-            CalculateAndSendThrustersRotationValuesToThrustersManager(rotation);
+            CalculateAndSendThrustersRotationValuesToThrustersManager(rotation, _shipMarker.transform.localRotation);
 
             yield return null;
         }
 
-        CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3.zero);
+        CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3.zero, Quaternion.identity);
         _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
         if (_ActiveControlModes == 0) _shipMarker.SetActive(false);
     }
@@ -243,6 +208,63 @@ public class ShipCommandOneHand : MonoBehaviour
         return angle *= factor;
     }
 
+    
+
+    private void CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3 vector3Rotation, Quaternion quaternionRotation)
+    {
+        Vector3 absRotation = vector3Rotation;
+        absRotation.x = Mathf.Abs(absRotation.x);
+        absRotation.y = Mathf.Abs(absRotation.y);
+        absRotation.z = Mathf.Abs(absRotation.z);
+        float rotationThrusterValue = Mathf.Max(absRotation.x, absRotation.y, absRotation.z) / 180;
+
+         Debug.Log(rotationThrusterValue);
+        
+        _thrustersManager.ChangeRotationThrusterValues(_thrustersManager.RotationThruster, rotationThrusterValue, quaternionRotation);
+    }
+
+
+
+    private void CalculateAndSendThrustersTranslationValuesToThrustersManager(Vector3 translation)
+    {
+        float _backwardThrusterValue = -Mathf.Clamp(translation.z, -Mathf.Infinity, 0);
+        _thrustersManager.ChangeThrusterValues(_thrustersManager.BackwardThruster, _backwardThrusterValue);
+
+        float _forwardThrusterValue = Mathf.Clamp(translation.z, 0, Mathf.Infinity);
+        _thrustersManager.ChangeThrusterValues(_thrustersManager.ForwardThruster, _forwardThrusterValue);
+
+        float _rightThrusterValue = -Mathf.Clamp(translation.x, -Mathf.Infinity, 0);
+        _thrustersManager.ChangeThrusterValues(_thrustersManager.RightThruster, _rightThrusterValue);
+
+        float _leftThrusterValue = Mathf.Clamp(translation.x, 0, Mathf.Infinity);
+        _thrustersManager.ChangeThrusterValues(_thrustersManager.LeftThruster, _leftThrusterValue);
+
+        float _upThrusterValue = -Mathf.Clamp(translation.y, -Mathf.Infinity, 0);
+        _thrustersManager.ChangeThrusterValues(_thrustersManager.UpThruster, _upThrusterValue);
+
+        float _downThrusterValue = Mathf.Clamp(translation.y, 0, Mathf.Infinity);
+        _thrustersManager.ChangeThrusterValues(_thrustersManager.DownThruster, _downThrusterValue);
+    }
+
+
+    private void InitialiseTranslation()
+    {
+        _enterInTranslationControlMode = false;
+
+        _handInitialPosition = _controller.transform.localPosition;
+
+        ChangeShipMarkerDisplay(_shipMarkerTranslationMaterial);
+    }
+
+    private void InitialiseRotation()
+    {
+        _enterInRotationControlMode = false;
+
+        _handInitialRotation = _controller.transform.localRotation;
+
+        ChangeShipMarkerDisplay(_shipMarkerRotationMaterial);
+    }
+
     private Vector3 LimitTranslationValue(Vector3 translation) // Limits the translation input values inside a sphere.
     {
         float distance = translation.magnitude;
@@ -254,50 +276,23 @@ public class ShipCommandOneHand : MonoBehaviour
     }
 
 
-
-    private void CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3 rotation)
+    private void ChangeShipMarkerDisplay(Material mat)
     {
-        Vector3 absRotation = rotation;
-        absRotation.x = Mathf.Abs(absRotation.x);
-        absRotation.y = Mathf.Abs(absRotation.y);
-        absRotation.z = Mathf.Abs(absRotation.z);
-        float rotationThrusterValue = Mathf.Max(absRotation.x, absRotation.y, absRotation.z) / 180;
+        if (_ActiveControlModes > 0) _shipMarker.SetActive(true);
 
-         Debug.Log(rotationThrusterValue);
-
-        _thrustersManager.ChangeRotationThrusterValues(_thrustersManager.RotationThruster, rotationThrusterValue, rotation);
+        if (_ActiveControlModes == 2)
+        {
+            for (int i = 0; i < _shipMarkerChildrenRenderers.Length; i++)
+            {
+                _shipMarkerChildrenRenderers[i].material = _shipMarkerTranslationAndRotationMaterial;
+            }
+        }
+        else if (_ActiveControlModes == 1)
+        {
+            for (int i = 0; i < _shipMarkerChildrenRenderers.Length; i++)
+            {
+                _shipMarkerChildrenRenderers[i].material = mat;
+            }
+        }
     }
-
-
-
-    private void CalculateAndSendThrustersTranslationValuesToThrustersManager(Vector3 translation)
-    {
-        float _backwardThrusterValue = -Mathf.Clamp(translation.z, -Mathf.Infinity, 0);
-        _thrustersManager.ChangeThrusterValues(_thrustersManager.BackwardThruster, _backwardThrusterValue * (1 / _maxTranslationInputValue));
-
-        float _forwardThrusterValue = Mathf.Clamp(translation.z, 0, Mathf.Infinity);
-        _thrustersManager.ChangeThrusterValues(_thrustersManager.ForwardThruster, _forwardThrusterValue * (1 / _maxTranslationInputValue));
-
-        float _rightThrusterValue = -Mathf.Clamp(translation.x, -Mathf.Infinity, 0);
-        _thrustersManager.ChangeThrusterValues(_thrustersManager.RightThruster, _rightThrusterValue * (1 / _maxTranslationInputValue));
-
-        float _leftThrusterValue = Mathf.Clamp(translation.x, 0, Mathf.Infinity);
-        _thrustersManager.ChangeThrusterValues(_thrustersManager.LeftThruster, _leftThrusterValue * (1 / _maxTranslationInputValue));
-
-        float _upThrusterValue = -Mathf.Clamp(translation.y, -Mathf.Infinity, 0);
-        _thrustersManager.ChangeThrusterValues(_thrustersManager.UpThruster, _upThrusterValue * (1 / _maxTranslationInputValue));
-
-        float _downThrusterValue = Mathf.Clamp(translation.y, 0, Mathf.Infinity);
-        _thrustersManager.ChangeThrusterValues(_thrustersManager.DownThruster, _downThrusterValue * (1 / _maxTranslationInputValue));
-    }
-
-
-
-    //private void CalculateAndSendThrustersValuesToThrustersManager(Vector3 translation)
-    //{
-    //    // Forward / Backward thrusters:
-    //    if (translation.z > 0.01f || translation.z < -0.01f)
-    // float valueToTransmit = Mathf.Abs(translation.z);
-    //        _thrustersManager.ChangeThrusterValues(_thrustersManager.BackwardThrusters, valueToTransmit * (1 / _maxTranslationInputValue));
-    //}
 }
