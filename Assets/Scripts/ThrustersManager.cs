@@ -69,7 +69,7 @@ public class ThrustersManager : MonoBehaviour
             else if (value > minimumValue)
             {
                 thruster.ThrusterAudioSource[i].volume = value;
-                thruster.ThrusterAudioSource[i].pitch = 1 + (value * 0.5f);
+             //   thruster.ThrusterAudioSource[i].pitch = 1 + (value * 0.5f);
             }
         }       
     }

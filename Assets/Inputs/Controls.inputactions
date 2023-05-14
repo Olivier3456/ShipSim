@@ -1,0 +1,94 @@
+{
+    "name": "Controls",
+    "maps": [
+        {
+            "name": "Ship Controls",
+            "id": "4f7d3507-68f0-4d9d-a1c0-e48b21a5d71b",
+            "actions": [
+                {
+                    "name": "Ship Rotation Left Hand",
+                    "type": "Value",
+                    "id": "c5174bf8-06f2-4a57-bb0d-96408b00aa08",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ship Rotation Right Hand",
+                    "type": "Value",
+                    "id": "883d3d8c-1186-471f-962a-e21be4beac8d",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ship Translation Left Hand",
+                    "type": "Value",
+                    "id": "f8cea3e0-6cc4-4f04-822e-6b1cb1101a6f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                },
+                {
+                    "name": "Ship Translation Right Hand",
+                    "type": "Value",
+                    "id": "f316a309-8c5d-4396-8cd3-3a275f45526f",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": true
+                }
+            ],
+            "bindings": [
+                {
+                    "name": "",
+                    "id": "51f66fb4-47a8-4c4a-9e8e-0e3bcf440ef6",
+                    "path": "<XRController>{LeftHand}/primaryButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ship Rotation Left Hand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "47b38bc5-935e-48e2-ba84-e797163d1cfe",
+                    "path": "<XRController>{LeftHand}/secondaryButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ship Translation Left Hand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "e8d2afbb-d693-44b5-8470-1bff632d8e34",
+                    "path": "<XRController>{RightHand}/primaryButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ship Rotation Right Hand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "4446cc1d-d21b-4c1d-8159-e6d8922c56a0",
+                    "path": "<XRController>{RightHand}/secondaryButton",
+                    "interactions": "Press(behavior=2)",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Ship Translation Right Hand",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                }
+            ]
+        }
+    ],
+    "controlSchemes": []
+}
