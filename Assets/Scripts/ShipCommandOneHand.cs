@@ -78,7 +78,7 @@ public class ShipCommandOneHand : MonoBehaviour
         _inputActionsTranslationLeftHand.action.Enable();
         _inputActionsTranslationLeftHand.action.performed += TranslationInputActionLeftHand;
         _inputActionsTranslationRightHand.action.Enable();
-        _inputActionsTranslationRightHand.action.performed += TranslationInputActionRightHand;        
+        _inputActionsTranslationRightHand.action.performed += TranslationInputActionRightHand;
     }
 
     private void FixedUpdate()
@@ -87,13 +87,11 @@ public class ShipCommandOneHand : MonoBehaviour
         Rotation();
     }
 
-
-
     private void RotationInputActionLeftHand(InputAction.CallbackContext obj)     // Interaction modes for the buttons must be set to "Press > Press and Release".
     {
         float inputActionValue = _inputActionsRotationLeftHand.action.ReadValue<float>();    // Action Type must be set to "Value".
         SetRotationOrTranslationController(inputActionValue, _leftController, ref _rotationController);
-    }    
+    }
 
     private void RotationInputActionRightHand(InputAction.CallbackContext obj)
     {
@@ -228,7 +226,11 @@ public class ShipCommandOneHand : MonoBehaviour
 
     IEnumerator LerpShipMarkerRotationToZeroPoint()
     {
-        while (Quaternion.Dot(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation) < 0.995f)
+        DebugText.text = "Enter in LerpRotation";
+
+
+        while (Quaternion.Dot(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation) < 0.9999f
+            && Quaternion.Dot(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation) > -0.9999f)
         {
             if (_rotationController != null) yield break;
             _shipMarker.transform.localRotation = Quaternion.Lerp(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation, 0.15f);
@@ -240,11 +242,15 @@ public class ShipCommandOneHand : MonoBehaviour
             CalculateAndSendThrustersRotationValuesToThrustersManager(rotation, _shipMarker.transform.localRotation);
 
             yield return null;
+
+            DebugText.text = Quaternion.Dot(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation).ToString();
         }
 
         CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3.zero, Quaternion.identity);
         _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
         ChangeShipMarkerDisplay();
+
+        DebugText.text = "LerpRotation is Finished";
     }
 
     private float CorrectAngle(ref float angle)
@@ -355,7 +361,7 @@ public class ShipCommandOneHand : MonoBehaviour
                 }
             }
         }
-        else
+        else if (_rotationController == null && _translationController == null)
         {
             _shipMarker.SetActive(false);
         }
