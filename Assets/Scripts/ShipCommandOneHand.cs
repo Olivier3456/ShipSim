@@ -226,9 +226,6 @@ public class ShipCommandOneHand : MonoBehaviour
 
     IEnumerator LerpShipMarkerRotationToZeroPoint()
     {
-        DebugText.text = "Enter in LerpRotation";
-
-
         while (Quaternion.Dot(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation) < 0.9999f
             && Quaternion.Dot(_shipMarker.transform.localRotation, _zeroPointMarker.transform.localRotation) > -0.9999f)
         {
@@ -248,9 +245,7 @@ public class ShipCommandOneHand : MonoBehaviour
 
         CalculateAndSendThrustersRotationValuesToThrustersManager(Vector3.zero, Quaternion.identity);
         _shipMarker.transform.localRotation = _zeroPointMarker.transform.localRotation;
-        ChangeShipMarkerDisplay();
-
-        DebugText.text = "LerpRotation is Finished";
+        ChangeShipMarkerDisplay();        
     }
 
     private float CorrectAngle(ref float angle)
@@ -361,7 +356,7 @@ public class ShipCommandOneHand : MonoBehaviour
                 }
             }
         }
-        else if (_rotationController == null && _translationController == null)
+        else
         {
             _shipMarker.SetActive(false);
         }
