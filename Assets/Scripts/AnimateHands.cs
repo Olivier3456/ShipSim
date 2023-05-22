@@ -14,10 +14,16 @@ public class AnimateHands : MonoBehaviour
     
     void Update()
     {
-        float triggerVal = _pinchAction.action.ReadValue<float>();
-        _animator.SetFloat("Trigger", triggerVal);
-
         float gripVal = _gripAction.action.ReadValue<float>();
-        _animator.SetFloat("Grip",gripVal);
-    }    
+        _animator.SetFloat("Pointing",gripVal);
+
+
+
+
+        //float triggerVal = _pinchAction.action.ReadValue<float>();
+        //_animator.SetFloat("Trigger", triggerVal);
+
+        //float gripVal = _gripAction.action.ReadValue<float>();
+        //_animator.SetFloat("Grip",gripVal);
+    }
 }

@@ -52,7 +52,7 @@ public class ShipCommandOneHand : MonoBehaviour
     [Space(10)]
     [SerializeField] private float _maxTranslationInputValue = 0.2f;
     [Space(20)]
-    [SerializeField] private float _rotationsSensibility = 0.0001f;
+    [SerializeField] private float _rotationsSensibility = 0.005f;
     [SerializeField][Range(0, 1)] private float _rotationXFactor = 1.0f;
     [SerializeField][Range(0, 1)] private float _rotationYFactor = 1.0f;
     [SerializeField][Range(0, 1)] private float _rotationZFactor = 1.0f;
