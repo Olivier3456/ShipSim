@@ -15,14 +15,14 @@ public class ButtonPerso : MonoBehaviour
     private bool _freeze = false;
 
     private Vector3 _initialLocalPosition;
-
-
-    private Vector3 _buttonOnLocalPosition;
-    public float distanceFromMaxPositionAndOnLocalPosition = 0.01f;
+    
     public bool buttonIsOn = false;
     private AudioSource _audioSource;
-    public AudioClip _audioClipOn;
-    public AudioClip _audioClipOff;
+    public AudioClip audioClipOn;
+    public AudioClip audioClipOff;
+    public Renderer renderer;
+    public Material materialOn;
+    public Material materialOff;
     
 
 
@@ -41,7 +41,9 @@ public class ButtonPerso : MonoBehaviour
         _interactable.hoverExited.AddListener(Reset);
         _interactable.selectEntered.AddListener(Freeze);
 
-        _audioSource = GetComponent<AudioSource>();
+        _audioSource = GetComponent<AudioSource>();        
+        if (buttonIsOn) renderer.material = materialOn;
+        else renderer.material = materialOff;
     }
 
     public void Follow(BaseInteractionEventArgs hover)
@@ -82,15 +84,15 @@ public class ButtonPerso : MonoBehaviour
 
             if (buttonIsOn)
             {
-                _audioSource.PlayOneShot(_audioClipOn);
+                _audioSource.PlayOneShot(audioClipOn);
+                renderer.material = materialOn;
             }
             else
 
             {
-                _audioSource.PlayOneShot(_audioClipOff);
-            }
-
-            _buttonOnLocalPosition = visualTarget.localPosition + localAxis * -distanceFromMaxPositionAndOnLocalPosition;
+                _audioSource.PlayOneShot(audioClipOff);
+                renderer.material = materialOff;
+            }            
         }
     }
 
@@ -108,14 +110,7 @@ public class ButtonPerso : MonoBehaviour
         }
         else
         {
-            if (!buttonIsOn)
-            {
                 visualTarget.localPosition = Vector3.Lerp(visualTarget.localPosition, _initialLocalPosition, Time.deltaTime * resetSpeed);
-            }
-            else
-            {
-                visualTarget.localPosition = Vector3.Lerp(visualTarget.localPosition, _buttonOnLocalPosition, Time.deltaTime * resetSpeed);
-            }
         }
     }
 }
