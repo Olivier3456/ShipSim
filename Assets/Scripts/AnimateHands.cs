@@ -5,26 +5,18 @@ using UnityEngine.InputSystem;
 
 public class AnimateHands : MonoBehaviour
 {
-
-    //[SerializeField] private InputActionProperty _pinchAction;
-
-    //[SerializeField] private InputActionProperty _gripAction;
-
     [SerializeField] private Animator _animator;
+    [SerializeField] private float _animationSpeed = 4;
 
-    //void Update()
-    //{
-    //    float gripVal = _gripAction.action.ReadValue<float>();
-    //    _animator.SetFloat("Pointing", gripVal);
-
-    //}
-
-
+    private bool _handInTrigger;
 
     private void OnTriggerEnter(Collider other)
     {
         if (other.CompareTag("Hand trigger"))
-        _animator.SetFloat("Pointing", 1);
+        {
+            _handInTrigger = true;
+            StartCoroutine(HandEnteredTrigger());
+        }
     }
 
 
@@ -32,10 +24,36 @@ public class AnimateHands : MonoBehaviour
     private void OnTriggerExit(Collider other)
     {
         if (other.CompareTag("Hand trigger"))
-            _animator.SetFloat("Pointing", 0);
+        {
+            _handInTrigger = false;
+            StartCoroutine(HandExitedTrigger());
+        }
     }
 
-   
+    IEnumerator HandExitedTrigger()
+    {
+        while (_animator.GetFloat("Pointing") > 0.001f)
+        {
+            if (_handInTrigger) { yield break; }
+            _animator.SetFloat("Pointing", _animator.GetFloat("Pointing") - Time.deltaTime * _animationSpeed);
+            yield return null;
+        }
+
+        // Debug.Log("Sortie de la coroutine HandExitedTrigger");
+    }
+
+    IEnumerator HandEnteredTrigger()
+    {
+        while (_animator.GetFloat("Pointing") < 0.999f)
+        {
+            if (!_handInTrigger) { yield break; }
+            _animator.SetFloat("Pointing", _animator.GetFloat("Pointing") + Time.deltaTime * _animationSpeed);
+            yield return null;
+        }
+
+        // Debug.Log("Sortie de la coroutine HandEnteredTrigger");
+    }
+
 
 
 }
@@ -49,9 +67,9 @@ public class AnimateHands : MonoBehaviour
 //    [SerializeField] private InputActionProperty _pinchAction;
 
 //    [SerializeField] private InputActionProperty _gripAction;
-    
+
 //    [SerializeField] private Animator _animator;
-    
+
 //    void Update()
 //    {
 //        float gripVal = _gripAction.action.ReadValue<float>();
